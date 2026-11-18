@@ -19,8 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      // This tells NextAuth to link the Google account to the existing email
-      allowDangerousEmailAccountLinking: true, 
+      allowDangerousEmailAccountLinking: true, // This fixes the loop!
     }),
     Credentials({
       name: "credentials",
