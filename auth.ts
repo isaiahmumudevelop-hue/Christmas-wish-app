@@ -7,7 +7,6 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // CRITICAL: The JWT strategy is required when using a Credentials provider.
   session: { strategy: "jwt" },
   providers: [
     Google({
@@ -24,10 +23,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        // FIX: Lowercase the email before querying the database!
+        const emailToFind = (credentials.email as string).toLowerCase();
+
         const user = await db
           .select()
           .from(users)
-          .where(eq(users.email, credentials.email as string))
+          .where(eq(users.email, emailToFind))
           .limit(1);
 
         if (user.length === 0 || !user[0].passwordHash) return null;
