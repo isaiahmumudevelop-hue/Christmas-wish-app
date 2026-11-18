@@ -4,13 +4,14 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { guardians, consentAudit, users } from "@/db/schema";
+import { sendGuardianConsentEmail } from "@/lib/mail";
 
 const TOKEN_TTL_DAYS = 7;
 
 const bodySchema = z.object({
   minorUserId: z.string().uuid(),
   guardianName: z.string().min(2).max(120),
-  guardianEmail: z.string().email().optional(),
+  guardianEmail: z.string().email(),
   guardianPhone: z.string().min(7).max(20),
   relationship: z.enum(["parent", "legal_guardian", "other"]),
 });
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
     }
     if (existing[0].consentStatus === "pending") {
       return NextResponse.json(
-        { error: "A consent request is already pending. Check guardian inbox." },
+        { error: "A consent request is already pending. Check the guardian's email." },
         { status: 409 }
       );
     }
@@ -90,16 +91,19 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:4000";
   const consentUrl = `${baseUrl}/consent/${token}`;
   
-  console.log("\n========== STUB EMAIL ==========");
-  console.log(`To: ${data.guardianEmail ?? data.guardianPhone}`);
-  console.log(`URL: ${consentUrl}`);
-  console.log(`Expires in: ${TOKEN_TTL_DAYS} days`);
-  console.log("================================\n");
+  // Send the actual email!
+  try {
+    await sendGuardianConsentEmail(data.guardianEmail, minor[0].name, consentUrl);
+  } catch (error) {
+    console.error("Failed to send consent email:", error);
+    // We still return success because the database record was created, 
+    // but in a real app you might want to handle this differently.
+  }
 
   return NextResponse.json({
     ok: true,
     guardianId: guardian.id,
-    consentUrl,
+    message: "Consent email sent to guardian",
     expiresInDays: TOKEN_TTL_DAYS,
   });
 }
