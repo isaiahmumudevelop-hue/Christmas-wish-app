@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       wish: wishes,
       wisher: {
         id: users.id,
-        fullName: users.fullName,
+        name: users.name,
         isMinor: users.isMinor,
       },
     })

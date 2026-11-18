@@ -34,7 +34,7 @@ export default async function ConsentPage({ params }: { params: Promise<{ token:
         <div className="bg-white p-8 rounded-2xl shadow text-center max-w-md w-full border-t-4 border-green-500">
           <div className="text-4xl mb-4">✅</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Consent Already Granted</h1>
-          <p className="text-gray-600">You have already approved {minor.fullName} to use Christmas Wish.</p>
+          <p className="text-gray-600">You have already approved {minor.name} to use Christmas Wish.</p>
         </div>
       </div>
     );
@@ -53,7 +53,7 @@ export default async function ConsentPage({ params }: { params: Promise<{ token:
         </p>
 
         <div className="bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100">
-          <p className="mb-2"><strong className="text-gray-900">Minor's Name:</strong> <span className="text-gray-700">{minor.fullName}</span></p>
+          <p className="mb-2"><strong className="text-gray-900">Minor's Name:</strong> <span className="text-gray-700">{minor.name}</span></p>
           <p><strong className="text-gray-900">Relationship:</strong> <span className="text-gray-700 capitalize">{guardian.relationship}</span></p>
         </div>
 

@@ -5,6 +5,6 @@ export async function GET(req: NextRequest) {
   const user = await getCurrentUser(req);
   if (!user) return NextResponse.json({ user: null });
   return NextResponse.json({
-    user: { id: user.id, fullName: user.fullName, role: user.role, isMinor: user.isMinor }
+    user: { id: user.id, name: user.name, role: user.role, isMinor: user.isMinor }
   });
 }

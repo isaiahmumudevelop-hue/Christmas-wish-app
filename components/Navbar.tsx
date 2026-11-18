@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
-type User = { id: string; fullName: string; role: string };
+type User = { id: string; name: string; role: string };
 
 export default function Navbar({ user }: { user: User | null }) {
   const router = useRouter();
@@ -52,7 +52,7 @@ export default function Navbar({ user }: { user: User | null }) {
           {user ? (
             <div className="flex items-center gap-3">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-bold text-gray-900">{user.fullName}</p>
+                <p className="text-sm font-bold text-gray-900">{user.name}</p>
                 <p className="text-xs text-gray-500 capitalize">{user.role}</p>
               </div>
               <button 

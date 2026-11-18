@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type WishData = {
   wish: { id: string; title: string; description: string; estimatedCost: string; status: string; category: string };
-  wisher: { fullName: string; isMinor: boolean };
+  wisher: { name: string; isMinor: boolean };
 };
 
 export default function AdminWishesPage() {
@@ -73,7 +73,7 @@ export default function AdminWishesPage() {
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">{item.wish.title}</h2>
                     <p className="text-sm text-gray-500 mt-1">
-                      Requested by <strong>{item.wisher.fullName}</strong> {item.wisher.isMinor && <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded ml-1">Minor (Consent Granted)</span>}
+                      Requested by <strong>{item.wisher.name}</strong> {item.wisher.isMinor && <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded ml-1">Minor (Consent Granted)</span>}
                     </p>
                   </div>
                   <div className="text-right">

@@ -8,13 +8,13 @@ import { users, sponsors } from "@/db/schema";
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const fullName = formData.get("fullName") as string;
+    const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const role = formData.get("role") as string;
     const uploadedFileUrl = formData.get("uploadedFileUrl") as string;
 
-    if (!fullName || !email || !password || !role) {
+    if (!name || !email || !password || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -34,13 +34,13 @@ export async function POST(req: NextRequest) {
     }
 
     const [newUser] = await db.insert(users).values({
-      fullName,
+      name,
       email: email.toLowerCase(),
       passwordHash,
       dateOfBirth,
       isMinor,
       role: role === "sponsor" ? "wisher" : "wisher", // Upgrade to sponsor after verification
-      profilePictureUrl: uploadedFileUrl || null,
+      image: uploadedFileUrl || null,
       invitationCode,
     }).returning();
 

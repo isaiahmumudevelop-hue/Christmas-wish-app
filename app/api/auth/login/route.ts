@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ 
       ok: true, 
-      user: { id: user.id, fullName: user.fullName, role: user.role } 
+      user: { id: user.id, name: user.name, role: user.role } 
     });
 
   } catch (error) {

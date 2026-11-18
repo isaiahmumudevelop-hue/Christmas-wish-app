@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type WishData = {
   wish: { id: string; title: string; description: string; estimatedCost: string; currency: string; category: string };
-  wisher: { fullName: string; isMinor: boolean };
+  wisher: { name: string; isMinor: boolean };
 };
 
 export default function SponsorWishesPage() {
@@ -77,7 +77,7 @@ export default function SponsorWishesPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded uppercase">{item.wish.category}</span>
-                    <span className="text-xs text-gray-500">For {item.wisher.fullName} {item.wisher.isMinor && "(Minor)"}</span>
+                    <span className="text-xs text-gray-500">For {item.wisher.name} {item.wisher.isMinor && "(Minor)"}</span>
                   </div>
                   <h2 className="text-xl font-bold text-gray-900">{item.wish.title}</h2>
                   <p className="text-gray-600 mt-2 text-sm">{item.wish.description}</p>

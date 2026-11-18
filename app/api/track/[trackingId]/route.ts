@@ -18,7 +18,7 @@ export async function GET(
       shipment: shipments,
       order: orders,
       wish: { id: wishes.id, title: wishes.title, category: wishes.category },
-      wisher: { fullName: users.fullName },
+      wisher: { name: users.name },
     })
     .from(shipments)
     .innerJoin(orders, eq(shipments.orderId, orders.id))
@@ -44,7 +44,7 @@ export async function GET(
     .orderBy(desc(trackingEvents.occurredAt));
 
   // Redact: first name + first letter of last name only
-  const nameParts = wisher.fullName.trim().split(/\s+/);
+  const nameParts = wisher.name.trim().split(/\s+/);
   const redactedName =
     nameParts.length > 1
       ? `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`

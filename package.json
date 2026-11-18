@@ -12,6 +12,7 @@
     "@auth/drizzle-adapter": "^1.11.3",
     "@aws-sdk/client-s3": "^3.1170.0",
     "@tailwindcss/postcss": "^4.3.3",
+    "@upstash/blob": "^0.0.14",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.6",

@@ -14,11 +14,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }),
-  session: { strategy: "jwt" }, // Using JWT so it plays nice with the existing cookie setup
+  session: { strategy: "jwt" }, 
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // This tells NextAuth to link the Google account to the existing email
+      allowDangerousEmailAccountLinking: true, 
     }),
     Credentials({
       name: "credentials",
@@ -35,7 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const isValid = await bcrypt.compare(credentials.password as string, user[0].passwordHash);
         if (!isValid) return null;
 
-        return { id: user[0].id, email: user[0].email, name: user[0].fullName };
+        return { id: user[0].id, email: user[0].email, name: user[0].name };
       },
     }),
   ],

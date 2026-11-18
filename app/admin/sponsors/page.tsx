@@ -6,7 +6,7 @@ type SponsorData = {
   id: string;
   companyName: string;
   rcNumber: string | null;
-  user: { fullName: string; email: string };
+  user: { name: string; email: string };
 };
 
 export default function AdminSponsorsPage() {
@@ -59,7 +59,7 @@ export default function AdminSponsorsPage() {
               <div>
                 <h2 className="text-xl font-bold text-gray-900">{s.companyName}</h2>
                 <p className="text-sm text-gray-500 mt-1">RC: {s.rcNumber}</p>
-                <p className="text-sm text-gray-500">Contact: {s.user.fullName} ({s.user.email})</p>
+                <p className="text-sm text-gray-500">Contact: {s.user.name} ({s.user.email})</p>
               </div>
               <div className="flex gap-3">
                 <button onClick={() => handleAction(s.id, "reject")} className="px-4 py-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg font-bold transition">Reject</button>

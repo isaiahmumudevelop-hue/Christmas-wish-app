@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
       id: sponsors.id,
       companyName: sponsors.companyName,
       rcNumber: sponsors.rcNumber,
-      user: { fullName: users.fullName, email: users.email }
+      user: { name: users.name, email: users.email }
     })
     .from(sponsors)
     .innerJoin(users, eq(sponsors.userId, users.id))

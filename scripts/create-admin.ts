@@ -11,7 +11,7 @@ async function main() {
 
   await db.insert(users).values({
     email,
-    fullName: "Isaiah Admin",
+    name: "Isaiah Admin",
     dateOfBirth: "1990-01-01",
     role: "admin",
     passwordHash: hash,

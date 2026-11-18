@@ -23,7 +23,7 @@ export default async function TrackPage({
     .select({
       shipment: shipments,
       wish: { id: wishes.id, title: wishes.title, category: wishes.category },
-      wisher: { fullName: users.fullName },
+      wisher: { name: users.name },
     })
     .from(shipments)
     .innerJoin(orders, eq(shipments.orderId, orders.id))
@@ -46,7 +46,7 @@ export default async function TrackPage({
     .where(eq(trackingEvents.shipmentId, shipment.id))
     .orderBy(desc(trackingEvents.occurredAt));
 
-  const nameParts = wisher.fullName.trim().split(/\s+/);
+  const nameParts = wisher.name.trim().split(/\s+/);
   const redactedName =
     nameParts.length > 1
       ? `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`

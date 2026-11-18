@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       <div className="bg-gray-900 rounded-3xl p-8 md:p-12 text-white mb-8 shadow-xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold">Welcome back, {user.fullName.split(' ')[0]} 👋</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">Welcome back, {user.name.split(' ')[0]} 👋</h1>
             <p className="text-gray-400 mt-2 text-lg">Manage your wishes and track your deliveries here.</p>
           </div>
           <Link href="/wishes/new" className="bg-rose-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-rose-500 transition shadow-lg shadow-rose-600/30 whitespace-nowrap">
