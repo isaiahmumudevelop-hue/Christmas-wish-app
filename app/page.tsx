@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, desc } from "drizzle-orm";
 import { db } from "@/db";
 import { wishes, sponsors } from "@/db/schema";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  // 1. Fetch Stats
   const [stats] = await db
     .select({
       total: sql<number>`count(*)::int`,
@@ -18,81 +19,159 @@ export default async function Home() {
     .from(sponsors)
     .where(eq(sponsors.verificationStatus, "verified"));
 
+  // 2. Fetch Recent Verified Wishes for the Homepage
+  const recentWishes = await db
+    .select()
+    .from(wishes)
+    .where(eq(wishes.status, "verified"))
+    .orderBy(desc(wishes.verifiedAt))
+    .limit(3);
+
   return (
-    <main className="bg-gradient-to-b from-rose-50 via-white to-emerald-50">
+    <main className="bg-[#FFF9F9] min-h-screen">
       
-      {/* Hero Section - Full Screen */}
-      <section className="min-h-[calc(100vh-4rem)] flex flex-col justify-center px-6 max-w-6xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto">
-          <span className="inline-block py-1 px-3 rounded-full bg-rose-100 text-rose-700 text-sm font-semibold mb-6">
-            🎄 Spreading joy across Africa
+      {/* HERO SECTION */}
+      <section className="relative bg-gradient-to-b from-red-700 via-red-800 to-red-900 overflow-hidden pt-20 pb-32">
+        {/* Decorative background elements */}
+        <div className="absolute top-10 left-10 text-6xl opacity-20 transform -rotate-12 blur-sm">🎄</div>
+        <div className="absolute bottom-20 right-10 text-8xl opacity-10 transform rotate-12 blur-sm">🎁</div>
+        <div className="absolute top-1/3 right-1/4 text-4xl opacity-30 blur-[1px]">❄️</div>
+
+        <div className="max-w-6xl mx-auto px-6 relative z-10 text-center">
+          <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/10 backdrop-blur-md text-red-100 text-sm font-semibold mb-6 border border-white/20 shadow-lg">
+            ✨ Spreading joy across Africa
           </span>
-          <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight leading-[1.1]">
-            Christmas wishes, <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-emerald-600">
-              verified and delivered.
+          
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.1] mb-6">
+            Spread joy with <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400">
+              thoughtful holiday gifts.
             </span>
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Children and families across Nigeria, Ghana, and Cameroon tell us what they need. Our team verifies every wish. Sponsors fund them. We deliver — with real tracking.
+          
+          <p className="mt-6 text-lg md:text-xl text-red-100 max-w-2xl mx-auto leading-relaxed mb-10">
+            Children and families across Nigeria, Ghana, and Cameroon tell us what they need. Our team verifies every wish. Sponsors fund them. We deliver with real tracking.
           </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/wishes/new" className="px-8 py-4 bg-rose-600 text-white rounded-xl font-bold text-lg hover:bg-rose-700 shadow-lg shadow-rose-600/30 transition-all hover:-translate-y-0.5">
-              Make a Wish
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/wishes/new" className="w-full sm:w-auto px-8 py-4 bg-white text-red-800 rounded-full font-bold text-lg hover:bg-gray-50 shadow-[0_10px_40px_rgba(255,255,255,0.3)] transition-all hover:-translate-y-1">
+              🎁 Make a Wish
             </Link>
-            <Link href="/sponsor/wishes" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-gray-800 shadow-lg shadow-gray-900/30 transition-all hover:-translate-y-0.5">
-              Sponsor a Wish
+            <Link href="/sponsor/wishes" className="w-full sm:w-auto px-8 py-4 bg-red-950/40 text-white backdrop-blur-md border border-white/20 rounded-full font-bold text-lg hover:bg-red-950/60 shadow-lg transition-all hover:-translate-y-1">
+              ❤️ Sponsor a Wish
             </Link>
           </div>
+        </div>
 
-          {/* Stats */}
-          <div className="mt-16 grid grid-cols-3 gap-4 border-t border-gray-200 pt-8">
-            <div>
-              <p className="text-4xl font-extrabold text-gray-900">{stats.total}</p>
-              <p className="text-sm text-gray-500 font-medium mt-1 uppercase tracking-wide">Wishes Submitted</p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold text-emerald-600">{stats.delivered}</p>
-              <p className="text-sm text-gray-500 font-medium mt-1 uppercase tracking-wide">Gifts Delivered</p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold text-rose-600">{sponsorCount.count}</p>
-              <p className="text-sm text-gray-500 font-medium mt-1 uppercase tracking-wide">Verified Sponsors</p>
-            </div>
+        {/* Curve at the bottom of the hero */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#FFF9F9] rounded-t-[3rem]"></div>
+      </section>
+
+      {/* FLOATING STATS CARD */}
+      <section className="max-w-4xl mx-auto px-6 relative -mt-24 z-20">
+        <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-red-50 p-8 md:p-10 grid grid-cols-3 gap-4 text-center divide-x divide-gray-100">
+          <div>
+            <p className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-1">{stats.total}</p>
+            <p className="text-xs md:text-sm text-gray-500 font-bold uppercase tracking-wider">Wishes Made</p>
+          </div>
+          <div>
+            <p className="text-4xl md:text-5xl font-extrabold text-red-600 mb-1">{stats.delivered}</p>
+            <p className="text-xs md:text-sm text-gray-500 font-bold uppercase tracking-wider">Gifts Delivered</p>
+          </div>
+          <div>
+            <p className="text-4xl md:text-5xl font-extrabold text-emerald-600 mb-1">{sponsorCount.count}</p>
+            <p className="text-xs md:text-sm text-gray-500 font-bold uppercase tracking-wider">Verified Sponsors</p>
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="bg-white py-24 border-t">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-16">How it works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
-              <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl mb-6">📝</div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3">1. Make a wish</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Tell us what you need — schoolbooks, medicine, food, a laptop. Guardians consent for minors.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
-              <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl mb-6">✅</div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3">2. We verify</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Our team confirms each wish is genuine, appropriate, and within budget. No scams, no spam.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
-              <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl mb-6">🎁</div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3">3. Sponsors deliver</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Verified sponsors purchase and ship the gift. You track every step with your tracking ID.
-              </p>
-            </div>
+      {/* HOW IT WORKS */}
+      <section className="py-24 px-6 max-w-6xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-16">How it works</h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300">
+            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-3xl mb-6">📝</div>
+            <h3 className="font-bold text-2xl text-gray-900 mb-3">Make a wish</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Tell us exactly what you need. Whether it's schoolbooks, medicine, or food, we've got you covered. Guardians consent for minors.
+            </p>
+          </div>
+          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300">
+            <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-3xl mb-6">✅</div>
+            <h3 className="font-bold text-2xl text-gray-900 mb-3">We verify</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Our dedicated team manually reviews and confirms each wish to ensure it is genuine and appropriate. No scams, just real needs.
+            </p>
+          </div>
+          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300">
+            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-3xl mb-6">🚚</div>
+            <h3 className="font-bold text-2xl text-gray-900 mb-3">Sponsors deliver</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Verified sponsors purchase and ship the gift directly. You get a tracking ID to follow the package every step of the way.
+            </p>
           </div>
         </div>
       </section>
+
+      {/* FEATURED WISHES */}
+      {recentWishes.length > 0 && (
+        <section className="py-16 bg-white px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex justify-between items-end mb-10">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Wishes waiting for a hero</h2>
+                <p className="text-gray-500 mt-2">These verified wishes are ready to be sponsored.</p>
+              </div>
+              <Link href="/sponsor/wishes" className="hidden md:inline-block text-red-600 font-bold hover:text-red-700 hover:underline">
+                See all wishes →
+              </Link>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {recentWishes.map((wish) => (
+                <div key={wish.id} className="bg-[#FFF9F9] rounded-3xl p-6 border border-red-100 flex flex-col justify-between hover:shadow-lg transition-all">
+                  <div>
+                    <span className="inline-block bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
+                      {wish.category}
+                    </span>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{wish.title}</h3>
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-6">{wish.description}</p>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-red-100">
+                    <span className="font-extrabold text-gray-900 text-lg">₦{Number(wish.estimatedCost).toLocaleString()}</span>
+                    <Link href={`/sponsor/wishes`} className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-gray-800 transition">
+                      Sponsor
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-8 text-center md:hidden">
+              <Link href="/sponsor/wishes" className="text-red-600 font-bold hover:underline">
+                See all wishes →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* SPONSOR CTA BANNER */}
+      <section className="py-20 px-6 max-w-6xl mx-auto">
+        <div className="bg-gradient-to-br from-gray-900 to-black rounded-[3rem] p-10 md:p-16 text-center shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 text-9xl opacity-10 transform translate-x-10 -translate-y-10">🏢</div>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 relative z-10">
+            Simplify your gifting journey.
+          </h2>
+          <p className="text-gray-400 text-lg max-w-xl mx-auto mb-10 relative z-10">
+            Join top brands and verified organizations making a real impact this holiday season. Every sponsored wish is tracked and reported.
+          </p>
+          <Link href="/sponsor/register" className="inline-block bg-white text-gray-900 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition shadow-lg relative z-10">
+            Become a Sponsor
+          </Link>
+        </div>
+      </section>
+
     </main>
   );
 }
