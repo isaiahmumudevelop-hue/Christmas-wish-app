@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // CRITICAL: The JWT strategy is required when using a Credentials provider.
   session: { strategy: "jwt" },
   providers: [
     Google({

@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,33 +17,22 @@ export default function LoginPage() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    // 1. Validate inputs first (no try/catch around signIn)
+    // 1. Validate inputs BEFORE calling signIn
     if (!email || !password) {
       setError("Please enter both email and password.");
       setLoading(false);
       return;
     }
 
-    try {
-      const res = await signIn("credentials", {
-        email,
-        password,
-        redirect: false, // We handle the redirect manually
-      });
-
-      if (res?.error) {
-        // If NextAuth returns an error, show a message
-        throw new Error(res.error);
-      }
-
-      // If successful, redirect manually
-      router.push("/dashboard");
-      router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Invalid email or password");
-    } finally {
-      setLoading(false);
-    }
+    // 2. Call signIn WITHOUT a try/catch block.
+    // On success, NextAuth will handle the redirect automatically.
+    // On failure, it will redirect back to the login page with an error.
+    await signIn("credentials", {
+      email,
+      password,
+      // We do not need `redirect: false` here.
+      // NextAuth's default behavior handles the redirect.
+    });
   }
 
   return (
@@ -94,5 +81,3 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
-  );
-}
