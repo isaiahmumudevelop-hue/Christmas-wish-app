@@ -17,21 +17,15 @@ export default function LoginPage() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    // 1. Validate inputs BEFORE calling signIn
     if (!email || !password) {
       setError("Please enter both email and password.");
       setLoading(false);
       return;
     }
 
-    // 2. Call signIn WITHOUT a try/catch block.
-    // On success, NextAuth will handle the redirect automatically.
-    // On failure, it will redirect back to the login page with an error.
     await signIn("credentials", {
       email,
       password,
-      // We do not need `redirect: false` here.
-      // NextAuth's default behavior handles the redirect.
     });
   }
 
@@ -81,3 +75,5 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
