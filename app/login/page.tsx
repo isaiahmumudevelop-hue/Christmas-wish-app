@@ -1,12 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+// We need to wrap the form in a Suspense boundary because useSearchParams requires it
+function LoginForm() {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Check if NextAuth redirected back with an error
+  useEffect(() => {
+    const urlError = searchParams.get("error");
+    if (urlError === "CredentialsSignin") {
+      setError("Invalid email or password. Please try again.");
+    } else if (urlError) {
+      setError("An error occurred during login. Please try again.");
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,6 +39,7 @@ export default function LoginPage() {
     await signIn("credentials", {
       email,
       password,
+      callbackUrl: "/dashboard",
     });
   }
 
@@ -38,9 +52,12 @@ export default function LoginPage() {
           <p className="text-gray-500 text-sm mt-1">Log in to manage your wishes or sponsorships.</p>
         </div>
 
-        {error && <div className="bg-red-50 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}
+        {error && (
+          <div className="bg-red-50 text-red-700 p-3 rounded mb-4 text-sm font-medium text-center border border-red-100">
+            {error}
+          </div>
+        )}
 
-        {/* Google Button */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           type="button"
@@ -75,5 +92,13 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

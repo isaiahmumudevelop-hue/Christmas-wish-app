@@ -21,27 +21,47 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log("❌ Login failed: Missing email or password");
+            return null;
+          }
 
-        // FIX: Lowercase the email before querying the database!
-        const emailToFind = (credentials.email as string).toLowerCase();
+          const emailToFind = (credentials.email as string).toLowerCase();
+          console.log("🔍 Attempting login for:", emailToFind);
 
-        const user = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, emailToFind))
-          .limit(1);
+          const user = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, emailToFind))
+            .limit(1);
 
-        if (user.length === 0 || !user[0].passwordHash) return null;
+          if (user.length === 0) {
+            console.log("❌ Login failed: User not found in database");
+            return null;
+          }
 
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user[0].passwordHash
-        );
+          if (!user[0].passwordHash) {
+            console.log("❌ Login failed: User has no password (maybe signed up with Google?)");
+            return null;
+          }
 
-        if (!isValid) return null;
+          const isValid = await bcrypt.compare(
+            credentials.password as string,
+            user[0].passwordHash
+          );
 
-        return { id: user[0].id, email: user[0].email, name: user[0].name };
+          if (!isValid) {
+            console.log("❌ Login failed: Incorrect password");
+            return null;
+          }
+
+          console.log("✅ Login successful for:", emailToFind);
+          return { id: user[0].id, email: user[0].email, name: user[0].name };
+        } catch (error) {
+          console.error("❌ Login error:", error);
+          return null;
+        }
       },
     }),
   ],
